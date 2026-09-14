@@ -1,6 +1,6 @@
 cask "pc-stats-panel" do
-  version "2.3"
-  sha256 "9e171ddcf806266507e28f183ad37afb2bb12367bd1f14699cbaac6fd6d7db6c"
+  version "2.4"
+  sha256 "9405c69eab878f5ddec8e27ef0ad0d21a6edf92e66cc77bee118d6b3e774cea6"
 
   url "https://github.com/sameershanbhag/pc-stats-dock/releases/download/v#{version}/PC-Stats-Panel-#{version}.dmg"
   name "PC Stats Panel"
@@ -16,24 +16,35 @@ cask "pc-stats-panel" do
 
   app "PC Stats Panel.app"
 
-  uninstall script:    {
+  # Registers (or re-registers, after an upgrade) the login item; no dialog.
+  postflight do
+    system_command "#{appdir}/PC Stats Panel.app/Contents/MacOS/PCStatsPanel", args: ["--setup"], must_succeed: false
+  end
+
+  # Stops the agent and removes the login item; the Accessibility grant and your buttons survive an upgrade.
+  uninstall launchctl: "com.pcstatsdock.agent",
+            script:    {
               executable:   "#{appdir}/PC Stats Panel.app/Contents/MacOS/PCStatsPanel",
               args:         ["--uninstall"],
               must_succeed: false,
-            },
-            launchctl: "com.pcstatsdock.agent"
+            }
 
-  zap trash: [
-    "~/Applications/Stats Dock Admin.app",
-    "~/Library/Application Support/pc-stats-dock",
-    "~/Library/Caches/pc-stats-dock",
-    "~/Library/Logs/pc-stats-dock",
-  ]
+  zap script: {
+        executable:   "#{appdir}/PC Stats Panel.app/Contents/MacOS/PCStatsPanel",
+        args:         ["--purge"],
+        must_succeed: false,
+      },
+      trash: [
+        "~/Applications/Stats Dock Admin.app",
+        "~/Library/Application Support/pc-stats-dock",
+        "~/Library/Caches/pc-stats-dock",
+        "~/Library/Logs/pc-stats-dock",
+      ]
 
   caveats <<~CAVEATS
-    Open "PC Stats Panel" once: it installs itself as a login item and quits.
-    Plug in the panel: the dashboard opens on it. Then switch on "PC Stats Panel" under
-    System Settings > Privacy & Security > Accessibility (key buttons and touch need it).
+    The login item is registered already. Plug in the panel: the dashboard opens on it.
+    Then switch on "PC Stats Panel" under System Settings > Privacy & Security > Accessibility
+    (key buttons and touch need it; the switch survives upgrades).
 
     Optional:  brew install macmon                                   (temperatures and power)
                brew install jakehilborn/jakehilborn/displayplacer    (automatic screen arrangement)
