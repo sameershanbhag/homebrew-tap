@@ -1,6 +1,6 @@
 cask "pc-stats-panel" do
-  version "2.9"
-  sha256 "1e9fdbba265e9bdfff7bf5fe013af587ce885b8b7ba4bc2fb8bd2de21ae316bb"
+  version "2.10"
+  sha256 "82bea9bce98883d787a7f7ea67c13acb5acc60212e4bdd6a433497cab9f3b87f"
 
   url "https://github.com/sameershanbhag/pc-stats-dock/releases/download/v#{version}/PC-Stats-Panel-#{version}.dmg"
   name "PC Stats Panel"
